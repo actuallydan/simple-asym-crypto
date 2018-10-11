@@ -75,7 +75,7 @@ async function encrypt(text, publicKey) {
     encrypt_promise.then(
       function(result) {
         let encrypted_data = new Uint8Array(result);
-        resolve(JSON.stringify(encrypted_data));
+        resolve(convertArrayBufferViewtoString(encrypted_data));
       },
       function(e) {
         console.error(e.message);
@@ -106,12 +106,12 @@ function importPrivKey(key) {
         true,
         ["decrypt"]
       )
-      .then(
-        function(e) {
-          console.error(e);
-          resolve(e);
-        }
-      );
+      .then(function(priv) {
+        resolve(priv);
+      })
+      .catch(e => {
+        reject(e);
+      });
   });
 }
 function importPubKey(key) {
@@ -137,12 +137,12 @@ function importPubKey(key) {
         true,
         ["encrypt"]
       )
-      .then(
-        function(e) {
-          console.log(e);
-          resolve(e);
-        }
-      );
+      .then(function(pub) {
+        resolve(pub);
+      })
+      .catch(e => {
+        reject(e);
+      });
   });
 }
 function decrypt(encText, privateKey) {
@@ -161,7 +161,7 @@ function decrypt(encText, privateKey) {
     let decrypt_promise = crypto.subtle.decrypt(
       { name: "RSA-OAEP", iv: vector },
       private_key_object,
-      JSON.parse(encText)
+      convertStringToArrayBufferView(encText)
     );
 
     decrypt_promise.then(
