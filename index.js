@@ -54,7 +54,7 @@ async function exportKey(k) {
   return JSON.stringify(await crypto.subtle.exportKey("jwk", k));
 }
 
-function encrypt(text, publicKey) {
+async function encrypt(text, publicKey) {
   var crypto = window.crypto || window.msCrypto;
 
   if (!crypto.subtle) {
@@ -161,7 +161,7 @@ function decrypt(encText, privateKey) {
     let decrypt_promise = crypto.subtle.decrypt(
       { name: "RSA-OAEP", iv: vector },
       private_key_object,
-      JSON.parse(encText);
+      JSON.parse(encText)
     );
 
     decrypt_promise.then(
@@ -193,4 +193,10 @@ function convertArrayBufferViewtoString(buffer) {
   }
 
   return str;
+}
+
+module.exports = {
+  pair,
+  encrypt,
+  decrypt
 }
